@@ -82,6 +82,16 @@ def update_car(id):
 
     return make_response(jsonify({"message": "Updated Successfully", "row_updated": rows_update}), 200)
 
+@app.route("/car/<int:id>", methods=["DELETE"])
+def delete_car(id):
+    conn = mysql.connection.cursor()
+    query = f"""DELETE FROM `cardatabase`.`cars` WHERE (`car_id` = '{id}');"""
+    conn.execute(query)
+    mysql.connection.commit()
+    rows_delete = conn.rowcount
+    conn.close()
 
+    return make_response(jsonify({"message": "Deleted Successfully", "row_deleted": rows_delete}), 200)
+                         
 if __name__ == "__main__":
     app.run(debug=True)
