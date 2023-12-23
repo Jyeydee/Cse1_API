@@ -36,6 +36,30 @@ def get_actor_by_id(id):
     data = data_fetch("""SELECT * FROM cars where car_id = {}""".format(id))
     return make_response(jsonify(data), 200)
 
+@app.route("/carAdd", methods=["GET", "POST"])
+def add_car():
+    
+    conn = mysql.connection.cursor()
+    info = request.get_json()
+
+    carid = info['car_id']
+    car_year = info['car_year_of_manufacture']
+    car_model = info['model']
+    make_id = info['manufacturer_id']
+
+
+    query = """INSERT INTO `cardatabase`.`cars` (`car_id`, `car_year_of_manufacture`, `model`, `manufacturer_id`) 
+               VALUES (%s, %s, %s, %s)"""
+
+    values = (carid, car_year, car_model, make_id)
+    conn.execute(query, values)
+
+    mysql.connection.commit()
+    rows_added = conn.rowcount
+    print(f"Rows ADDED: {rows_added}")
+    conn.close()
+
+    return make_response(jsonify({"message": "Added Successfully", "row_added": rows_added}), 200)
 
 if __name__ == "__main__":
     app.run(debug=True)
