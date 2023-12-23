@@ -47,7 +47,6 @@ def add_car():
     car_model = info['model']
     make_id = info['manufacturer_id']
 
-
     query = """INSERT INTO `cardatabase`.`cars` (`car_id`, `car_year_of_manufacture`, `model`, `manufacturer_id`) 
                VALUES (%s, %s, %s, %s)"""
 
@@ -60,6 +59,29 @@ def add_car():
     conn.close()
 
     return make_response(jsonify({"message": "Added Successfully", "row_added": rows_added}), 200)
+
+
+@app.route("/car/<int:id>", methods=["PUT"])
+def update_car(id):
+    conn = mysql.connection.cursor()
+    info = request.get_json()
+    carid = info['car_id']
+    car_year = info['car_year_of_manufacture']
+    car_model = info['model']
+    make_id = info['manufacturer_id']
+
+    query = f"""UPDATE `cardatabase`.`cars` SET `car_id` = '{carid}', `car_year_of_manufacture` = '{car_year}', 
+                `model`= '{car_model}', `manufacturer_id`= '{make_id}'
+                WHERE car_id = {id}"""
+    conn.execute(query)
+
+    mysql.connection.commit()
+    rows_update = conn.rowcount
+    print(f"Rows UPDATE : {rows_update}")
+    conn.close()
+
+    return make_response(jsonify({"message": "Updated Successfully", "row_updated": rows_update}), 200)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
